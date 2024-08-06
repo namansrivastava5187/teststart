@@ -42,6 +42,9 @@ export default function LoginScreen() {
     if(errorCode=="auth/invalid-credential"){
       ToastAndroid.show("enter correct credential",ToastAndroid.LONG)
     }
+    else if (errorCode=="auth/invalid-email"){
+      ToastAndroid.show("Email not registered",ToastAndroid.LONG)
+    }
   });
   };
 

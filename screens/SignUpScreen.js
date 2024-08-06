@@ -33,6 +33,7 @@ createUserWithEmailAndPassword(auth, email, password)
     if(errorCode=="auth/email-already-in-use"){
       ToastAndroid.show("email already exists",ToastAndroid.LONG)
     }
+    
     // ..
   });
   };
