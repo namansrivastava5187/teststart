@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { useNavigation } from '@react-navigation/native';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {auth} from "../configs/FirebaseConfig";
 
 export default function SignUpScreen() { // Changed the component name to match its purpose
   const navigation = useNavigation();
@@ -11,12 +13,30 @@ export default function SignUpScreen() { // Changed the component name to match 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignUp = () => { // Updated function name to match the action
-    // Handle the signup logic here
-    console.log('FullName:', fullname);
-    console.log('Email:', email);
-    console.log('Password:', password);
+  const OnCreateAccount = () => {
+    if (!email&&!fullname&&!password) {
+      ToastAndroid.show("Please enter all details",ToastAndroid.BOTTOM);
+      return ;
+    }
+createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed up 
+    const user = userCredential.user;
+    console.log(user);
+    navigation.replace("Home");
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(error);
+    if(errorCode=="auth/email-already-in-use"){
+      ToastAndroid.show("email already exists",ToastAndroid.LONG)
+    }
+    // ..
+  });
   };
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -119,7 +139,7 @@ export default function SignUpScreen() { // Changed the component name to match 
               borderRadius: 15,
               alignItems: 'center',
             }}
-            onPress={handleSignUp} // Updated the press handler
+            onPress={OnCreateAccount} // Updated the press handler
           >
             <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>
               Sign Up

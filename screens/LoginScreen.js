@@ -1,10 +1,13 @@
 
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import {auth} from "../configs/FirebaseConfig";
+
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -16,6 +19,33 @@ export default function LoginScreen() {
     console.log('Email:', email);
     console.log('Password:', password);
   };
+
+  const LoginUser =() => {
+    if(!email && !password){
+      ToastAndroid.show("Please enter credentials",ToastAndroid.LONG);
+      return
+    };
+
+
+    signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(user);
+    navigation.replace("Home");
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode);
+    if(errorCode=="auth/invalid-credential"){
+      ToastAndroid.show("enter correct credential",ToastAndroid.LONG)
+    }
+  });
+  };
+
+
   return (
     <View style={{ flex: 1 }}>
       <Svg height="100%" width="100%" style={StyleSheet.absoluteFill}>
@@ -104,7 +134,7 @@ export default function LoginScreen() {
               borderRadius: 15,
               alignItems: 'center',
             }}
-            onPress={handleSignUp} // Updated the press handler
+            onPress={LoginUser} // Updated the press handler
           >
             <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>
               Login

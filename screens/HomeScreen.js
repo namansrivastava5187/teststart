@@ -4,7 +4,7 @@ import React from 'react'
 export default function Homescreen() {
   return (
     <View>
-      <Text>Homescreen</Text>
+      <Text style={{marginTop:80,alignItems:'center'}}>Welcome Amam Mishra</Text>
     </View>
   )
 }
