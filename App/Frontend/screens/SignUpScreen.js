@@ -1,35 +1,26 @@
-
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { useNavigation } from '@react-navigation/native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import {auth} from "../configs/FirebaseConfig";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {auth} from "../../../App/Backend/configs/FirebaseConfig";
 
-
-export default function LoginScreen() {
+export default function SignUpScreen() { // Changed the component name to match its purpose
   const navigation = useNavigation();
+  const [fullname, setFullname] = useState(''); // Fixed state setter
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignUp = () => {
-    // Handle the login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
-  };
-
-  const LoginUser =() => {
-    if(!email && !password){
-      ToastAndroid.show("Please enter credentials",ToastAndroid.LONG);
-      return
-    };
-
-
-    signInWithEmailAndPassword(auth, email, password)
+  const OnCreateAccount = () => {
+    if (!email&&!fullname&&!password) {
+      ToastAndroid.show("Please enter all details",ToastAndroid.BOTTOM);
+      return ;
+    }
+createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
-    // Signed in 
+    // Signed up 
     const user = userCredential.user;
     console.log(user);
     navigation.replace("Home");
@@ -38,13 +29,12 @@ export default function LoginScreen() {
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    console.log(errorCode);
-    if(errorCode=="auth/invalid-credential"){
-      ToastAndroid.show("enter correct credential",ToastAndroid.LONG)
+    console.log(error);
+    if(errorCode=="auth/email-already-in-use"){
+      ToastAndroid.show("email already exists",ToastAndroid.LONG)
     }
-    else if (errorCode=="auth/invalid-email"){
-      ToastAndroid.show("Email not registered",ToastAndroid.LONG)
-    }
+    
+    // ..
   });
   };
 
@@ -71,7 +61,8 @@ export default function LoginScreen() {
               borderRadius: 15,
               marginLeft: 16,
               alignItems: 'center',
-              fontWeight: '600'
+              fontWeight: '600',
+              marginTop:20
             }}
           >
             <ArrowLeftIcon size="23" color="rgba(61, 143, 239, 1)" />
@@ -79,8 +70,8 @@ export default function LoginScreen() {
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 16 }}>
           <Image 
-            source={require('../App/Assets/Images/loginfigma.png')}
-            style={{ width: 328, height: 158, marginTop: 22, marginLeft: -20 }}  
+            source={require('../../../App/Assets/Images/loginfigma.png')}
+            style={{ width: 328, height: 158, marginLeft: -20 }}  
           />
         </View>
       </SafeAreaView>
@@ -100,7 +91,20 @@ export default function LoginScreen() {
       >
         
         <View style={{ marginBottom: 10, marginTop: 20 }}>
-         
+          <Text style={{ color: 'rgba(0, 0, 0, 1)', fontWeight: 'bold', marginLeft: 16 }}>Full Name</Text>
+          <TextInput 
+            style={{
+              padding: 16,
+              backgroundColor: 'lightgray',
+              color: 'gray',
+              borderRadius: 20,
+              marginBottom: 16,
+            }}
+            value={fullname}
+            onChangeText={setFullname} // Fixed the state setter here
+            placeholder='Enter Full Name' 
+            keyboardType='default' // Use default for general text input
+          />
           <Text style={{ color: 'rgba(0, 0, 0, 1)', fontWeight: 'bold', marginLeft: 16 }}>Email Address</Text>
           <TextInput 
             style={{
@@ -137,10 +141,10 @@ export default function LoginScreen() {
               borderRadius: 15,
               alignItems: 'center',
             }}
-            onPress={LoginUser} // Updated the press handler
+            onPress={OnCreateAccount} // Updated the press handler
           >
             <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>
-              Login
+              Sign Up
             </Text>
           </TouchableOpacity>
         </View>
@@ -157,7 +161,7 @@ export default function LoginScreen() {
             }}
           >
             <Image 
-              source={require('../App/Assets/Images/google.png')}
+              source={require('../../../App/Assets/Images/google.png')}
               style={{ width: 40, height: 40 }} 
               resizeMode="contain"
             />
@@ -172,16 +176,16 @@ export default function LoginScreen() {
             }}
           >
             <Image 
-              source={require('../App/Assets/Images/facebook.png')}
+              source={require('../../../App/Assets/Images/facebook.png')}
               style={{ width: 40, height: 40 }} 
               resizeMode="contain"
             />
           </TouchableOpacity>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 30 }}>
-          <Text style={{ color: 'rgba(0, 0, 0, 1)', fontWeight: '600' }}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-            <Text style={{ fontWeight: '600', color: 'rgba(61, 143, 239, 1)' }}>SignUp</Text>
+          <Text style={{ color: 'rgba(0, 0, 0, 1)', fontWeight: '600' }}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={{ fontWeight: '600', color: 'rgba(61, 143, 239, 1)' }}>Login</Text>
           </TouchableOpacity>
         </View>
       </View>

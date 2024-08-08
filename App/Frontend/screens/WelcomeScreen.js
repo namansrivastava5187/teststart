@@ -15,7 +15,7 @@ export default function WelcomeScreen() {
         </Text>
         <View >
           <Image 
-            source={require("../App/Assets/Images/welcomelottie.gif")}
+            source={require("../../../App/Assets/Images/welcomelottie.gif")}
             style={{ width:300, height: 250, marginHorizontal:30 }}
           />
         </View>
